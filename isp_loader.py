@@ -472,3 +472,7 @@ def main(argv):
         return_dict["Bin File"] = "Not Detected."
 
     print(return_dict)
+
+
+if __name__ == "__main__":
+    main(sys.argv[1:])
