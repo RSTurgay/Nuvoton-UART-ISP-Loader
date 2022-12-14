@@ -6,13 +6,7 @@ This project application has been prepared based on the ISP UART example found i
 
 In order to use it, the ISP_UART software must be written to the LDROM flash address.
 
-File Selecting
-
-![Alt text](./images/ldrom_isp.png?raw=true "Title")
-
 Also, LDROM must be selected as the boot option.
-
-![Alt text](./images/chip_settings.png?raw=true "Title")
 
 ## Usage
 

@@ -360,7 +360,7 @@ class ISPLoader:
 
 def main(argv):
     usage = """
-    usage: isp_uart_loader.py [options] [arguments] ... [-f firmware.bin] [-h] [--help]
+    usage: isp_loader.py [options] [arguments] ... [-f firmware.bin] [-h] [--help]
     
     Options:
     -h , --help                 : Print Show Usage
@@ -472,7 +472,3 @@ def main(argv):
         return_dict["Bin File"] = "Not Detected."
 
     print(return_dict)
-
-
-if __name__ == '__main__':
-    main(sys.argv[1:])
