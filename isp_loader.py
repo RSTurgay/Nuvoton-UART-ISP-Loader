@@ -360,7 +360,7 @@ class ISPLoader:
 
 def main(argv):
     usage = """
-    usage: isp_loader.py [options] [arguments] ... [-f firmware.bin] [-h] [--help]
+    usage: python.exe /path/to/loc/isp_loader.py [options] [arguments] ... [-f firmware.bin] [-h] [--help]
     
     Options:
     -h , --help                 : Print Show Usage

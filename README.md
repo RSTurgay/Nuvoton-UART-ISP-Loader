@@ -10,7 +10,7 @@ Also, LDROM must be selected as the boot option.
 
 ## Usage
 
-    usage: isp_loader.py [options] [arguments] ... [-f firmware.bin] [-h] [--help]
+    usage: python.exe /path/to/loc/isp_loader.py [options] [arguments] ... [-f firmware.bin] [-h] [--help]
     
     Options:
     -h , --help                 : Print Show Usage
