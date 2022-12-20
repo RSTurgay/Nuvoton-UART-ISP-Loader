@@ -360,7 +360,7 @@ class ISPLoader:
 
 def main(argv):
     usage = """
-    usage: python.exe /path/to/loc/isp_loader.py [options] [arguments] ... [-f firmware.bin] [-h] [--help]
+    usage: python.exe /path/to/loc/isp_loader.py [options] [arguments] ... [-p COM20] [-f firmware.bin] [-h] [--help]
     
     Options:
     -h , --help                 : Print Show Usage
@@ -372,9 +372,11 @@ def main(argv):
     -v , --firmware_version     : Add print list Firmware Version end of the process
     -c , --configs              : Add print list Device Configs Registers end of the process
     -f , --file=[firmware.bin]  : Write to MCU Bin File Selection
+    -p , --port=[/COM, /dev/tty]: Write to MCU UART Port Selection
     -t , --timeout              : MCU Connection Timeout (ms)
     Arguments:
     --file      : Write MCU Bin File
+    --port      : Write MCU Uart Port
     --timeout   : MCU Connection Timeout (ms)    # Default 1 second
     
     arg ...: arguments passed to program in sys.argv[1:]
