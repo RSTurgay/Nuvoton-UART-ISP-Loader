@@ -97,7 +97,8 @@ class ISPLoader:
             self.isp_buffer[0] = self.isp_cmd.CMD_CONNECT
             self.updatePackageNumber()
             self.isp_serial.write(bytes(self.isp_buffer))
-            resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            # resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            resp = self.isp_serial.readline()
             if resp != b'' and resp is not None:
                 if self.calculateChecksum(resp):
                     self.isp_serial.timeout = 0.5
@@ -120,7 +121,8 @@ class ISPLoader:
             self.package_no += 2
             self.updatePackageNumber()
             self.isp_serial.write(bytes(self.isp_buffer))
-            resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            # resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            resp = self.isp_serial.readline()
             if resp != b'' and resp is not None:
                 if self.calculateChecksum(resp):
                     self.config_0 = resp[8] | (resp[9] << 8) | (resp[10] << 16) | (resp[11] << 24)
@@ -143,7 +145,8 @@ class ISPLoader:
             self.package_no += 2
             self.updatePackageNumber()
             self.isp_serial.write(bytes(self.isp_buffer))
-            resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            # resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            resp = self.isp_serial.readline()
             if resp != b'' and resp is not None:
                 if self.calculateChecksum(resp):
                     self.device_id = resp[8] | (resp[9] << 8) | (resp[10] << 16) | (resp[11] << 24)
@@ -165,7 +168,8 @@ class ISPLoader:
             self.package_no += 2
             self.updatePackageNumber()
             self.isp_serial.write(bytes(self.isp_buffer))
-            resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            # resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            resp = self.isp_serial.readline()
             if resp != b'' and resp is not None:
                 if self.calculateChecksum(resp):
                     self.firmware_version = resp[8]
@@ -187,7 +191,8 @@ class ISPLoader:
             self.package_no += 2
             self.updatePackageNumber()
             self.isp_serial.write(bytes(self.isp_buffer))
-            resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            # resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            resp = self.isp_serial.readline()
             self.mcu_connect_status = False
             return True
         else:
@@ -205,7 +210,8 @@ class ISPLoader:
             self.package_no += 2
             self.updatePackageNumber()
             self.isp_serial.write(bytes(self.isp_buffer))
-            resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            # resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            resp = self.isp_serial.readline()
             self.mcu_connect_status = False
             return True
         else:
@@ -223,7 +229,8 @@ class ISPLoader:
             self.package_no += 2
             self.updatePackageNumber()
             self.isp_serial.write(bytes(self.isp_buffer))
-            resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            # resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            resp = self.isp_serial.readline()
             self.mcu_connect_status = False
             return True
         else:
@@ -245,7 +252,8 @@ class ISPLoader:
             self.isp_buffer[10] = (self.package_no >> 16) & 0xFF
             self.isp_buffer[11] = (self.package_no >> 24) & 0xFF
             self.isp_serial.write(bytes(self.isp_buffer))
-            resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            # resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            resp = self.isp_serial.readline()
             if resp != b'' and resp is not None:
                 if self.calculateChecksum(resp):
                     return True
@@ -261,16 +269,19 @@ class ISPLoader:
         :return: Connection True or False
         """
         if self.mcu_connect_status:
+            self.isp_serial.timeout = 5
             self.bufferClear()
             self.isp_buffer[0] = self.isp_cmd.CMD_ERASE_ALL
             self.package_no += 2
             self.updatePackageNumber()
             self.isp_serial.write(bytes(self.isp_buffer))
-            for _ in tqdm(range(100), desc="Erase"):
-                time.sleep(0.005)
-            resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            # resp = self.isp_serial.read(self.isp_cmd.BUFFER_LEN)
+            resp = self.isp_serial.readline()
             if resp != b'' and resp is not None:
                 if self.calculateChecksum(resp):
+                    for _ in tqdm(range(100), desc="Erase"):
+                        time.sleep(0.005)
+                    self.isp_serial.timeout = 0.5
                     return True
             else:
                 return False
@@ -321,7 +332,6 @@ class ISPLoader:
 
     def writeBinaryMCU(self, file_name):
         """
-
         :param file_name:
         :return: Write MCU Status
         """
@@ -333,6 +343,7 @@ class ISPLoader:
         self.isp_buffer.clear()
         self.start_byte_len = 16
         self.writeDataToBuffer(file_size, 16, address=0x00)
+        self.isp_serial.timeout = 10
         for i in tqdm(range(file_size), desc="Program"):
             if self.start_byte_len % self.isp_cmd.BUFFER_LEN == 0:
                 self.isp_serial.write(bytes(self.isp_buffer))
@@ -345,7 +356,6 @@ class ISPLoader:
             else:
                 self.isp_buffer.append(file_content[i])
             self.start_byte_len += 1
-
         if self.start_byte_len > 0:
             while self.isp_cmd.BUFFER_LEN - self.start_byte_len != 0:
                 self.isp_buffer.append(0x00)
@@ -356,6 +366,48 @@ class ISPLoader:
                 return True
             else:
                 return False
+
+
+def mcuLoadSoftware(binary_file, serial_port, erase_all_mcu_stat=True, reset_mcu_stat=True, mcu_connection_timeout=1000):
+    """
+
+    :param binary_file: MCU Write Binary File
+    :param serial_port: MCU Write Serial Port
+    :param erase_all_mcu_stat: MCU Write Binary File Before Erase All MCU
+    :param reset_mcu_stat: MCU Write Binary After Reset MCU
+    :param mcu_connection_timeout: MCU Connection Timeout
+    :return: Return Result Dict
+    """
+    return_dict = {"Bin File": "Available", "Program": "Err"}
+
+    isp_loader = ISPLoader(serial_port)
+    return_dict["Port"] = serial_port
+
+    timeout_counter = 0
+    return_dict["Timeout"] = str(mcu_connection_timeout)
+    while timeout_counter < mcu_connection_timeout:
+        if isp_loader.connectMCU():
+            if isp_loader.syncMCU():
+                if erase_all_mcu_stat:
+                    if isp_loader.eraseAllMCU():
+                        return_dict["Erase"] = "OK"
+                        erase_all_mcu_stat = False
+                    else:
+                        return_dict["Erase"] = "Checksum Error"
+                if isp_loader.syncMCU():
+                    return_dict["Program"] = "OK"
+                    isp_loader.writeBinaryMCU(binary_file)
+                    if reset_mcu_stat:
+                        isp_loader.runAPROM()
+                    return_dict["Timeout"] = "Not Timeout"
+                    break
+                else:
+                    return_dict["Program"] = "Sync Error"
+        time.sleep(0.001)
+        timeout_counter += 10
+
+    print(return_dict)
+    return return_dict
 
 
 def main(argv):
