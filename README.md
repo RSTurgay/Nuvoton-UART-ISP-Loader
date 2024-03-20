@@ -25,6 +25,7 @@ Also, LDROM must be selected as the boot option.
     -t , --timeout              : MCU Connection Timeout (ms)
     Arguments:
     --file      : Write MCU Bin File
+    --port      : Write MCU Uart Port
     --timeout   : MCU Connection Timeout (ms)    # Default 1 second
     
     arg ...: arguments passed to program in sys.argv[1:]
