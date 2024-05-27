@@ -316,19 +316,21 @@ class ISPLoader:
         :param resp: Return to MCU Response
         :return: Calculate Checksum Result Result True or False
         """
-        checksum = 0
-        for i in self.isp_buffer:
-            checksum += i
-        package_checksum = resp[0] | (resp[1] << 8)
-        checksum %= 65536
-        stat = False
-        if package_checksum == checksum:
-            stat = True
-        if stat:
-            returnPackageNo = (resp[7] << 24) | (resp[6] << 16) | (resp[5] << 8) | resp[4]
-            if returnPackageNo != (self.package_no + 1):
-                stat = False
-        return stat
+        if len(resp) > 7: 
+            checksum = 0
+            for i in self.isp_buffer:
+                checksum += i
+            package_checksum = resp[0] | (resp[1] << 8)
+            checksum %= 65536
+            stat = False
+            if package_checksum == checksum:
+                stat = True
+            if stat:
+                returnPackageNo = (resp[7] << 24) | (resp[6] << 16) | (resp[5] << 8) | resp[4]
+                if returnPackageNo != (self.package_no + 1):
+                    stat = False
+            return stat
+        return False
 
     def writeBinaryMCU(self, file_name):
         """
